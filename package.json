@@ -1,0 +1,35 @@
+{
+  "name": "agent-litter",
+  "version": "0.1.0",
+  "description": "Find and clean up the scratch files AI coding agents (Claude Code, Codex, Gemini CLI) leave in your repo, using their own session transcripts as evidence.",
+  "type": "module",
+  "bin": {
+    "agent-litter": "./bin/cli.js"
+  },
+  "files": [
+    "src",
+    "bin"
+  ],
+  "scripts": {
+    "test": "node --test test/bash.test.js test/score.test.js test/sessions.test.js test/cli.test.js"
+  },
+  "engines": {
+    "node": ">=18.3"
+  },
+  "keywords": [
+    "claude-code",
+    "codex",
+    "gemini-cli",
+    "ai-agents",
+    "git",
+    "pre-commit",
+    "cleanup",
+    "scratch-files"
+  ],
+  "author": "akshay-th",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akshay-th/agent-litter.git"
+  }
+}
