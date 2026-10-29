@@ -113,3 +113,9 @@ test('outside a git repo', () => {
   assert.equal(r.status, 2);
   assert.match(r.stderr, /not inside a git repository/);
 });
+
+test('header shortens a repo under HOME to ~', () => {
+  const s = setup();
+  const r = spawnSync(process.execPath, [CLI], { cwd: s.repo, encoding: 'utf8', env: { ...process.env, HOME: s.base, USERPROFILE: s.base, NO_COLOR: '1' } });
+  assert.match(r.stdout, new RegExp(`^~${s.repo.slice(s.base.length).replace(/\\/g, '\\\\')} · 0 session`));
+});

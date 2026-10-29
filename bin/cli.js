@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { homedir } from 'node:os';
+import { sep } from 'node:path';
 import { createInterface } from 'node:readline/promises';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
@@ -53,6 +55,11 @@ const ago = (t) => {
   return s < 3600 ? `${Math.round(s / 60)}m ago` : s < 86400 ? `${Math.round(s / 3600)}h ago` : `${Math.round(s / 86400)}d ago`;
 };
 
+const tildify = (p) => {
+  const home = homedir();
+  return p === home || p.startsWith(home + sep) ? `~${p.slice(home.length)}` : p;
+};
+
 function describeEvidence(ev) {
   const e = ev[0];
   const how = { write: `created with ${e.tool}`, edit: `edited with ${e.tool}`, 'shell-create': 'created by a shell command', 'during-session': 'appeared during a session' }[e.kind];
@@ -61,7 +68,7 @@ function describeEvidence(ev) {
 
 function printList(res, { all }) {
   const shown = all ? res.candidates : res.candidates.filter((c) => c.verdict !== 'keep');
-  console.log(dim(`${res.root} · ${res.sessions} session(s) from ${res.agents.join(', ') || 'no agents'}`));
+  console.log(dim(`${tildify(res.root)} · ${res.sessions} session(s) from ${res.agents.join(', ') || 'no agents'}`));
   if (!res.sessions) {
     console.log('No agent sessions found for this repo.');
     return;
