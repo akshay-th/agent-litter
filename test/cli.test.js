@@ -70,6 +70,7 @@ test('clean moves litter into .git/agent-litter and restore brings it back', () 
 
   const r = run(s, ['clean', '--yes']);
   assert.equal(r.status, 0, r.stderr);
+  assert.match(r.stdout, /moved 4 file\(s\) to \.git[\\/]agent-litter[\\/]\S+$/m);
   for (const f of ['debug_auth.py', 'IMPLEMENTATION_SUMMARY.md', 'out.log', 'src/index.ts.bak']) assert.ok(!existsSync(join(s.repo, f)), f);
   assert.ok(existsSync(join(s.repo, 'src/feature.ts')));
   assert.ok(existsSync(join(s.repo, 'my-own-notes.txt')));
@@ -101,7 +102,7 @@ test('check --staged only looks at staged files; install-hook wires it up', () =
   assert.doesNotMatch(r.stderr, /debug_auth/);
 
   const h = run(s, ['install-hook']);
-  assert.match(h.stdout, /created/);
+  assert.match(h.stdout, /created: \.git[\\/]hooks[\\/]pre-commit$/m);
   const hook = readFileSync(join(s.repo, '.git', 'hooks', 'pre-commit'), 'utf8');
   assert.match(hook, /check --staged/);
   assert.match(run(s, ['install-hook']).stdout, /already-installed/);

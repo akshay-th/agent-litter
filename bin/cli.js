@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { homedir } from 'node:os';
-import { sep } from 'node:path';
+import { isAbsolute, relative, sep } from 'node:path';
 import { createInterface } from 'node:readline/promises';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
@@ -58,6 +58,11 @@ const ago = (t) => {
 const tildify = (p) => {
   const home = homedir();
   return p === home || p.startsWith(home + sep) ? `~${p.slice(home.length)}` : p;
+};
+// Paths inside the repo relative to its root, everything else with ~
+const display = (root, p) => {
+  const rel = relative(root, p);
+  return rel && !rel.startsWith('..') && !isAbsolute(rel) ? rel : tildify(p);
 };
 
 function describeEvidence(ev) {
@@ -140,7 +145,7 @@ async function main(argv) {
   }
   if (cmd === 'install-hook') {
     const r = installHook(root, hookCommand());
-    console.log(`${green('✓')} ${r.status}: ${r.file}`);
+    console.log(`${green('✓')} ${r.status}: ${display(root, r.file)}`);
     return 0;
   }
 
@@ -187,7 +192,7 @@ async function main(argv) {
       return 1;
     }
     const r = clean(root, files, { del: values.delete });
-    console.log(values.delete ? `${green('✓')} deleted ${files.length} file(s)` : `${green('✓')} moved ${files.length} file(s) to ${r.dir}\n  undo: agent-litter restore`);
+    console.log(values.delete ? `${green('✓')} deleted ${files.length} file(s)` : `${green('✓')} moved ${files.length} file(s) to ${display(root, r.dir)}\n  undo: agent-litter restore`);
     return 0;
   }
   throw new Error(`unknown command "${cmd}" (try --help)`);
